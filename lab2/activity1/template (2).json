@@ -1,383 +1,379 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "virtualMachines_WEB1_name": {
-            "defaultValue": "WEB1",
-            "type": "String"
-        },
-        "sshPublicKeys_WEB1_key_name": {
-            "defaultValue": "WEB1_key",
-            "type": "String"
-        },
-        "publicIPAddresses_WEB1_ip_name": {
-            "defaultValue": "WEB1-ip",
-            "type": "String"
-        },
-        "virtualNetworks_VNET_LAB1_name": {
-            "defaultValue": "VNET-LAB1",
-            "type": "String"
-        },
-        "sshPublicKeys_WEB1_key_0201_name": {
-            "defaultValue": "WEB1_key_0201",
-            "type": "String"
-        },
-        "networkInterfaces_web1512_z2_name": {
-            "defaultValue": "web1512_z2",
-            "type": "String"
-        },
-        "networkSecurityGroups_NSG_WEB_name": {
-            "defaultValue": "NSG-WEB",
-            "type": "String"
-        },
-        "bastionHosts_VNET_LAB1_bastion_name": {
-            "defaultValue": "VNET-LAB1-bastion",
-            "type": "String"
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualMachines_WEB1_name": {
+      "defaultValue": "WEB1",
+      "type": "String"
     },
-    "variables": {},
-    "resources": [
-        {
-            "type": "Microsoft.Compute/sshPublicKeys",
-            "apiVersion": "2024-11-01",
-            "name": "[parameters('sshPublicKeys_WEB1_key_name')]",
-            "location": "eastus2",
-            "properties": {
-                "publicKey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC+U66mt1iip6JMTL+i0Qe22NadrdrAbYszu6XVY3m0L8IEsKaQiltwzKUNmcKLGzl2SxfcWKlk2wKkHSCLLs3YY0d9T2xglolezFxqIEg+glcA0oDEO5970SugFbfAdAyHcUjdhdxHVmRY0JptHnniXHu16nSyHPo2TLZG1Z/VFymna5H4otYgBDty0L/XTItKvC7H/ukYPorqdkduFIgPAE0/ITVQnRTc2N48Mph52QMieiEWTN3poCHodDoYVm0uYF3hAasNmbuzwVmXE5yBsAve9Y9uPs8ETsg36KA7xh8ZCGB3rZl40iDCM/cg9kpRFSggT6bLAAHap5FLOTNFHt9oJxtyWyd/FkUctzQKIFOjpHKTstNXt76UcZ+M1DQvg208HOgSBdiEQGWQqFeXdTemW/ZOMTRyB4ZK29fAN2o0MrqSYkwDdtFc3PgSyPu3LVf6upEpw8TVbKhnjCPBIsAT5loU1UbBUFcVshF44BATM8Vjo76wLyKF9f3hoNU= generated-by-azure"
-            }
-        },
-        {
-            "type": "Microsoft.Compute/sshPublicKeys",
-            "apiVersion": "2024-11-01",
-            "name": "[parameters('sshPublicKeys_WEB1_key_0201_name')]",
-            "location": "eastus2",
-            "properties": {
-                "publicKey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC/mQqCZcnnUGzZvU+cC6gcZT8yDJIk3DHfbnMRsnuxSMRGljXLprvE7tOmBb2z8e+pOx0xpUYYDfN999P3yULf2r2oUmaDngBw4SKGye3IyvycTt12AisAFKg0PCtECsl6GSynD1YRKJtptPk5qbWIM7QR3EfkX1782QI+8FM2YvRI4MZaDnh/8ENl4OY9YpVpX8nUGoGlvoX6J6cYPFaPFV9zUhbJosvrHY0a4lVgVckD/0Cp8sxZqds46VCT62en+IN52oSkwYpQ0RtfHY5dkM2J3HlNYBA2HshLLNFSUu3RLTuPc6V4cwS5o3caimwFiBe6YPuqI+lHrnceUNHd2BRQMIKOPdK38KfFgrWTZCj6zb1Dv+zNPs/Iv/Z8TFu5xdo6WgOf3JvfKjaqCXUj+5kgoHqrWGyb+XAcatZrxH7HLcrTOYr5zjoEH3jApTR4UWE92BrqYSC6mLHWhttvfrmfwHWkFP433DK0iPHkbcr/3mpjO8Idmx59QaeHKTE= generated-by-azure"
-            }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups",
-            "apiVersion": "2024-07-01",
-            "name": "[parameters('networkSecurityGroups_NSG_WEB_name')]",
-            "location": "eastus2",
-            "properties": {
-                "securityRules": [
-                    {
-                        "name": "ALLOW-SSH",
-                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('networkSecurityGroups_NSG_WEB_name'), 'ALLOW-SSH')]",
-                        "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-                        "properties": {
-                            "protocol": "TCP",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "22",
-                            "sourceAddressPrefix": "*",
-                            "destinationAddressPrefix": "*",
-                            "access": "Allow",
-                            "priority": 100,
-                            "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": []
-                        }
-                    },
-                    {
-                        "name": "ALLOW-HTTP",
-                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('networkSecurityGroups_NSG_WEB_name'), 'ALLOW-HTTP')]",
-                        "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-                        "properties": {
-                            "protocol": "TCP",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "80",
-                            "sourceAddressPrefix": "*",
-                            "destinationAddressPrefix": "*",
-                            "access": "Allow",
-                            "priority": 101,
-                            "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": []
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2024-07-01",
-            "name": "[parameters('publicIPAddresses_WEB1_ip_name')]",
-            "location": "eastus2",
-            "sku": {
-                "name": "Standard",
-                "tier": "Regional"
-            },
-            "zones": [
-                "2"
-            ],
-            "properties": {
-                "ipAddress": "74.249.45.138",
-                "publicIPAddressVersion": "IPv4",
-                "publicIPAllocationMethod": "Static",
-                "idleTimeoutInMinutes": 4,
-                "ipTags": [],
-                "ddosSettings": {
-                    "protectionMode": "VirtualNetworkInherited"
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Network/virtualNetworks",
-            "apiVersion": "2024-07-01",
-            "name": "[parameters('virtualNetworks_VNET_LAB1_name')]",
-            "location": "eastus2",
-            "properties": {
-                "addressSpace": {
-                    "addressPrefixes": [
-                        "10.0.1.0/24"
-                    ]
-                },
-                "encryption": {
-                    "enabled": false,
-                    "enforcement": "AllowUnencrypted"
-                },
-                "privateEndpointVNetPolicies": "Disabled",
-                "subnets": [
-                    {
-                        "name": "default",
-                        "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_VNET_LAB1_name'), 'default')]",
-                        "properties": {
-                            "addressPrefixes": [
-                                "10.0.1.0/24"
-                            ],
-                            "delegations": [],
-                            "privateEndpointNetworkPolicies": "Disabled",
-                            "privateLinkServiceNetworkPolicies": "Enabled"
-                        },
-                        "type": "Microsoft.Network/virtualNetworks/subnets"
-                    }
-                ],
-                "virtualNetworkPeerings": [],
-                "enableDdosProtection": false
-            }
-        },
-        {
-            "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2024-11-01",
-            "name": "[parameters('virtualMachines_WEB1_name')]",
-            "location": "eastus2",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_web1512_z2_name'))]"
-            ],
-            "zones": [
-                "2"
-            ],
-            "properties": {
-                "hardwareProfile": {
-                    "vmSize": "Standard_D2s_v3"
-                },
-                "additionalCapabilities": {
-                    "hibernationEnabled": false
-                },
-                "storageProfile": {
-                    "imageReference": {
-                        "publisher": "canonical",
-                        "offer": "0001-com-ubuntu-server-jammy",
-                        "sku": "22_04-lts-gen2",
-                        "version": "latest"
-                    },
-                    "osDisk": {
-                        "osType": "Linux",
-                        "name": "[concat(parameters('virtualMachines_WEB1_name'), '_OsDisk_1_75952a15215d4454a56b30210d9ac263')]",
-                        "createOption": "FromImage",
-                        "caching": "ReadWrite",
-                        "managedDisk": {
-                            "storageAccountType": "Premium_LRS",
-                            "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('virtualMachines_WEB1_name'), '_OsDisk_1_75952a15215d4454a56b30210d9ac263'))]"
-                        },
-                        "deleteOption": "Delete",
-                        "diskSizeGB": 30
-                    },
-                    "dataDisks": [],
-                    "diskControllerType": "SCSI"
-                },
-                "osProfile": {
-                    "computerName": "[parameters('virtualMachines_WEB1_name')]",
-                    "adminUsername": "azureuser",
-                    "linuxConfiguration": {
-                        "disablePasswordAuthentication": true,
-                        "ssh": {
-                            "publicKeys": [
-                                {
-                                    "path": "/home/azureuser/.ssh/authorized_keys",
-                                    "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC/mQqCZcnnUGzZvU+cC6gcZT8yDJIk3DHfbnMRsnuxSMRGljXLprvE7tOmBb2z8e+pOx0xpUYYDfN999P3yULf2r2oUmaDngBw4SKGye3IyvycTt12AisAFKg0PCtECsl6GSynD1YRKJtptPk5qbWIM7QR3EfkX1782QI+8FM2YvRI4MZaDnh/8ENl4OY9YpVpX8nUGoGlvoX6J6cYPFaPFV9zUhbJosvrHY0a4lVgVckD/0Cp8sxZqds46VCT62en+IN52oSkwYpQ0RtfHY5dkM2J3HlNYBA2HshLLNFSUu3RLTuPc6V4cwS5o3caimwFiBe6YPuqI+lHrnceUNHd2BRQMIKOPdK38KfFgrWTZCj6zb1Dv+zNPs/Iv/Z8TFu5xdo6WgOf3JvfKjaqCXUj+5kgoHqrWGyb+XAcatZrxH7HLcrTOYr5zjoEH3jApTR4UWE92BrqYSC6mLHWhttvfrmfwHWkFP433DK0iPHkbcr/3mpjO8Idmx59QaeHKTE= generated-by-azure"
-                                }
-                            ]
-                        },
-                        "provisionVMAgent": true,
-                        "patchSettings": {
-                            "patchMode": "AutomaticByPlatform",
-                            "automaticByPlatformSettings": {
-                                "rebootSetting": "IfRequired"
-                            },
-                            "assessmentMode": "ImageDefault"
-                        }
-                    },
-                    "secrets": [],
-                    "allowExtensionOperations": true,
-                    "requireGuestProvisionSignal": true
-                },
-                "securityProfile": {
-                    "uefiSettings": {
-                        "secureBootEnabled": true,
-                        "vTpmEnabled": true
-                    },
-                    "securityType": "TrustedLaunch"
-                },
-                "networkProfile": {
-                    "networkInterfaces": [
-                        {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_web1512_z2_name'))]",
-                            "properties": {
-                                "deleteOption": "Detach"
-                            }
-                        }
-                    ]
-                },
-                "diagnosticsProfile": {
-                    "bootDiagnostics": {
-                        "enabled": true
-                    }
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Network/bastionHosts",
-            "apiVersion": "2024-07-01",
-            "name": "[parameters('bastionHosts_VNET_LAB1_bastion_name')]",
-            "location": "eastus2",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_VNET_LAB1_name'))]"
-            ],
-            "sku": {
-                "name": "Developer"
-            },
-            "properties": {
-                "dnsName": "omnibrain.eastus2.bastionglobal.azure.com",
-                "scaleUnits": 2,
-                "virtualNetwork": {
-                    "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_VNET_LAB1_name'))]"
-                },
-                "ipConfigurations": []
-            }
-        },
-        {
+    "sshPublicKeys_WEB1_key_name": {
+      "defaultValue": "WEB1_key",
+      "type": "String"
+    },
+    "publicIPAddresses_WEB1_ip_name": {
+      "defaultValue": "WEB1-ip",
+      "type": "String"
+    },
+    "virtualNetworks_VNET_LAB1_name": {
+      "defaultValue": "VNET-LAB1",
+      "type": "String"
+    },
+    "sshPublicKeys_WEB1_key_0201_name": {
+      "defaultValue": "WEB1_key_0201",
+      "type": "String"
+    },
+    "networkInterfaces_web1512_z2_name": {
+      "defaultValue": "web1512_z2",
+      "type": "String"
+    },
+    "networkSecurityGroups_NSG_WEB_name": {
+      "defaultValue": "NSG-WEB",
+      "type": "String"
+    },
+    "bastionHosts_VNET_LAB1_bastion_name": {
+      "defaultValue": "VNET-LAB1-bastion",
+      "type": "String"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "type": "Microsoft.Compute/sshPublicKeys",
+      "apiVersion": "2024-11-01",
+      "name": "[parameters('sshPublicKeys_WEB1_key_name')]",
+      "location": "eastus2",
+      "properties": {
+        "publicKey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC+U66mt1iip6JMTL+i0Qe22NadrdrAbYszu6XVY3m0L8IEsKaQiltwzKUNmcKLGzl2SxfcWKlk2wKkHSCLLs3YY0d9T2xglolezFxqIEg+glcA0oDEO5970SugFbfAdAyHcUjdhdxHVmRY0JptHnniXHu16nSyHPo2TLZG1Z/VFymna5H4otYgBDty0L/XTItKvC7H/ukYPorqdkduFIgPAE0/ITVQnRTc2N48Mph52QMieiEWTN3poCHodDoYVm0uYF3hAasNmbuzwVmXE5yBsAve9Y9uPs8ETsg36KA7xh8ZCGB3rZl40iDCM/cg9kpRFSggT6bLAAHap5FLOTNFHt9oJxtyWyd/FkUctzQKIFOjpHKTstNXt76UcZ+M1DQvg208HOgSBdiEQGWQqFeXdTemW/ZOMTRyB4ZK29fAN2o0MrqSYkwDdtFc3PgSyPu3LVf6upEpw8TVbKhnjCPBIsAT5loU1UbBUFcVshF44BATM8Vjo76wLyKF9f3hoNU= generated-by-azure"
+      }
+    },
+    {
+      "type": "Microsoft.Compute/sshPublicKeys",
+      "apiVersion": "2024-11-01",
+      "name": "[parameters('sshPublicKeys_WEB1_key_0201_name')]",
+      "location": "eastus2",
+      "properties": {
+        "publicKey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC/mQqCZcnnUGzZvU+cC6gcZT8yDJIk3DHfbnMRsnuxSMRGljXLprvE7tOmBb2z8e+pOx0xpUYYDfN999P3yULf2r2oUmaDngBw4SKGye3IyvycTt12AisAFKg0PCtECsl6GSynD1YRKJtptPk5qbWIM7QR3EfkX1782QI+8FM2YvRI4MZaDnh/8ENl4OY9YpVpX8nUGoGlvoX6J6cYPFaPFV9zUhbJosvrHY0a4lVgVckD/0Cp8sxZqds46VCT62en+IN52oSkwYpQ0RtfHY5dkM2J3HlNYBA2HshLLNFSUu3RLTuPc6V4cwS5o3caimwFiBe6YPuqI+lHrnceUNHd2BRQMIKOPdK38KfFgrWTZCj6zb1Dv+zNPs/Iv/Z8TFu5xdo6WgOf3JvfKjaqCXUj+5kgoHqrWGyb+XAcatZrxH7HLcrTOYr5zjoEH3jApTR4UWE92BrqYSC6mLHWhttvfrmfwHWkFP433DK0iPHkbcr/3mpjO8Idmx59QaeHKTE= generated-by-azure"
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2024-07-01",
+      "name": "[parameters('networkSecurityGroups_NSG_WEB_name')]",
+      "location": "eastus2",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "ALLOW-SSH",
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('networkSecurityGroups_NSG_WEB_name'), 'ALLOW-SSH')]",
             "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2024-07-01",
-            "name": "[concat(parameters('networkSecurityGroups_NSG_WEB_name'), '/ALLOW-HTTP')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_NSG_WEB_name'))]"
-            ],
             "properties": {
-                "protocol": "TCP",
-                "sourcePortRange": "*",
-                "destinationPortRange": "80",
-                "sourceAddressPrefix": "*",
-                "destinationAddressPrefix": "*",
-                "access": "Allow",
-                "priority": 101,
-                "direction": "Inbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": []
+              "protocol": "TCP",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
             }
-        },
-        {
+          },
+          {
+            "name": "ALLOW-HTTP",
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('networkSecurityGroups_NSG_WEB_name'), 'ALLOW-HTTP')]",
             "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2024-07-01",
-            "name": "[concat(parameters('networkSecurityGroups_NSG_WEB_name'), '/ALLOW-SSH')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_NSG_WEB_name'))]"
-            ],
             "properties": {
-                "protocol": "TCP",
-                "sourcePortRange": "*",
-                "destinationPortRange": "22",
-                "sourceAddressPrefix": "*",
-                "destinationAddressPrefix": "*",
-                "access": "Allow",
-                "priority": 100,
-                "direction": "Inbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": []
+              "protocol": "TCP",
+              "sourcePortRange": "*",
+              "destinationPortRange": "80",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 101,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
             }
-        },
-        {
-            "type": "Microsoft.Network/virtualNetworks/subnets",
-            "apiVersion": "2024-07-01",
-            "name": "[concat(parameters('virtualNetworks_VNET_LAB1_name'), '/default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_VNET_LAB1_name'))]"
-            ],
-            "properties": {
-                "addressPrefixes": [
-                    "10.0.1.0/24"
-                ],
-                "delegations": [],
-                "privateEndpointNetworkPolicies": "Disabled",
-                "privateLinkServiceNetworkPolicies": "Enabled"
-            }
-        },
-        {
-            "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2024-07-01",
-            "name": "[parameters('networkInterfaces_web1512_z2_name')]",
-            "location": "eastus2",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_WEB1_ip_name'))]",
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_VNET_LAB1_name'), 'default')]",
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_NSG_WEB_name'))]"
-            ],
-            "kind": "Regular",
-            "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "ipconfig1",
-                        "id": "[concat(resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_web1512_z2_name')), '/ipConfigurations/ipconfig1')]",
-                        "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
-                        "properties": {
-                            "privateIPAddress": "10.0.1.4",
-                            "privateIPAllocationMethod": "Dynamic",
-                            "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_WEB1_ip_name'))]",
-                                "properties": {
-                                    "deleteOption": "Detach"
-                                }
-                            },
-                            "subnet": {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_VNET_LAB1_name'), 'default')]"
-                            },
-                            "primary": true,
-                            "privateIPAddressVersion": "IPv4"
-                        }
-                    }
-                ],
-                "dnsSettings": {
-                    "dnsServers": []
-                },
-                "enableAcceleratedNetworking": true,
-                "enableIPForwarding": false,
-                "disableTcpStateTracking": false,
-                "networkSecurityGroup": {
-                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_NSG_WEB_name'))]"
-                },
-                "nicType": "Standard",
-                "auxiliaryMode": "None",
-                "auxiliarySku": "None"
-            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2024-07-01",
+      "name": "[parameters('publicIPAddresses_WEB1_ip_name')]",
+      "location": "eastus2",
+      "sku": {
+        "name": "Standard",
+        "tier": "Regional"
+      },
+      "zones": [
+        "2"
+      ],
+      "properties": {
+        "publicIPAddressVersion": "IPv4",
+        "publicIPAllocationMethod": "Static",
+        "idleTimeoutInMinutes": 4,
+        "ipTags": [],
+        "ddosSettings": {
+          "protectionMode": "VirtualNetworkInherited"
         }
-    ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2024-07-01",
+      "name": "[parameters('virtualNetworks_VNET_LAB1_name')]",
+      "location": "eastus2",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "10.0.1.0/24"
+          ]
+        },
+        "encryption": {
+          "enabled": false,
+          "enforcement": "AllowUnencrypted"
+        },
+        "privateEndpointVNetPolicies": "Disabled",
+        "subnets": [
+          {
+            "name": "default",
+            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_VNET_LAB1_name'), 'default')]",
+            "properties": {
+              "addressPrefixes": [
+                "10.0.1.0/24"
+              ],
+              "delegations": [],
+              "privateEndpointNetworkPolicies": "Disabled",
+              "privateLinkServiceNetworkPolicies": "Enabled"
+            },
+            "type": "Microsoft.Network/virtualNetworks/subnets"
+          }
+        ],
+        "virtualNetworkPeerings": [],
+        "enableDdosProtection": false
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2024-11-01",
+      "name": "[parameters('virtualMachines_WEB1_name')]",
+      "location": "eastus2",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_web1512_z2_name'))]"
+      ],
+      "zones": [
+        "2"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D2s_v3"
+        },
+        "additionalCapabilities": {
+          "hibernationEnabled": false
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "canonical",
+            "offer": "0001-com-ubuntu-server-jammy",
+            "sku": "22_04-lts-gen2",
+            "version": "latest"
+          },
+          "osDisk": {
+            "osType": "Linux",
+            "name": "[concat(parameters('virtualMachines_WEB1_name'), '_OsDisk_1_75952a15215d4454a56b30210d9ac263')]",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "Premium_LRS"
+            },
+            "deleteOption": "Delete",
+            "diskSizeGB": 30
+          },
+          "dataDisks": [],
+          "diskControllerType": "SCSI"
+        },
+        "osProfile": {
+          "computerName": "[parameters('virtualMachines_WEB1_name')]",
+          "adminUsername": "azureuser",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "/home/azureuser/.ssh/authorized_keys",
+                  "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC/mQqCZcnnUGzZvU+cC6gcZT8yDJIk3DHfbnMRsnuxSMRGljXLprvE7tOmBb2z8e+pOx0xpUYYDfN999P3yULf2r2oUmaDngBw4SKGye3IyvycTt12AisAFKg0PCtECsl6GSynD1YRKJtptPk5qbWIM7QR3EfkX1782QI+8FM2YvRI4MZaDnh/8ENl4OY9YpVpX8nUGoGlvoX6J6cYPFaPFV9zUhbJosvrHY0a4lVgVckD/0Cp8sxZqds46VCT62en+IN52oSkwYpQ0RtfHY5dkM2J3HlNYBA2HshLLNFSUu3RLTuPc6V4cwS5o3caimwFiBe6YPuqI+lHrnceUNHd2BRQMIKOPdK38KfFgrWTZCj6zb1Dv+zNPs/Iv/Z8TFu5xdo6WgOf3JvfKjaqCXUj+5kgoHqrWGyb+XAcatZrxH7HLcrTOYr5zjoEH3jApTR4UWE92BrqYSC6mLHWhttvfrmfwHWkFP433DK0iPHkbcr/3mpjO8Idmx59QaeHKTE= generated-by-azure"
+                }
+              ]
+            },
+            "provisionVMAgent": true,
+            "patchSettings": {
+              "patchMode": "AutomaticByPlatform",
+              "automaticByPlatformSettings": {
+                "rebootSetting": "IfRequired"
+              },
+              "assessmentMode": "ImageDefault"
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true
+        },
+        "securityProfile": {
+          "uefiSettings": {
+            "secureBootEnabled": true,
+            "vTpmEnabled": true
+          },
+          "securityType": "TrustedLaunch"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_web1512_z2_name'))]",
+              "properties": {
+                "deleteOption": "Detach"
+              }
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/bastionHosts",
+      "apiVersion": "2024-07-01",
+      "name": "[parameters('bastionHosts_VNET_LAB1_bastion_name')]",
+      "location": "eastus2",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_VNET_LAB1_name'))]"
+      ],
+      "sku": {
+        "name": "Developer"
+      },
+      "properties": {
+        "dnsName": "omnibrain.eastus2.bastionglobal.azure.com",
+        "scaleUnits": 2,
+        "virtualNetwork": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_VNET_LAB1_name'))]"
+        },
+        "ipConfigurations": []
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+      "apiVersion": "2024-07-01",
+      "name": "[concat(parameters('networkSecurityGroups_NSG_WEB_name'), '/ALLOW-HTTP')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_NSG_WEB_name'))]"
+      ],
+      "properties": {
+        "protocol": "TCP",
+        "sourcePortRange": "*",
+        "destinationPortRange": "80",
+        "sourceAddressPrefix": "*",
+        "destinationAddressPrefix": "*",
+        "access": "Allow",
+        "priority": 101,
+        "direction": "Inbound",
+        "sourcePortRanges": [],
+        "destinationPortRanges": [],
+        "sourceAddressPrefixes": [],
+        "destinationAddressPrefixes": []
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+      "apiVersion": "2024-07-01",
+      "name": "[concat(parameters('networkSecurityGroups_NSG_WEB_name'), '/ALLOW-SSH')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_NSG_WEB_name'))]"
+      ],
+      "properties": {
+        "protocol": "TCP",
+        "sourcePortRange": "*",
+        "destinationPortRange": "22",
+        "sourceAddressPrefix": "*",
+        "destinationAddressPrefix": "*",
+        "access": "Allow",
+        "priority": 100,
+        "direction": "Inbound",
+        "sourcePortRanges": [],
+        "destinationPortRanges": [],
+        "sourceAddressPrefixes": [],
+        "destinationAddressPrefixes": []
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "2024-07-01",
+      "name": "[concat(parameters('virtualNetworks_VNET_LAB1_name'), '/default')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_VNET_LAB1_name'))]"
+      ],
+      "properties": {
+        "addressPrefixes": [
+          "10.0.1.0/24"
+        ],
+        "delegations": [],
+        "privateEndpointNetworkPolicies": "Disabled",
+        "privateLinkServiceNetworkPolicies": "Enabled"
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2024-07-01",
+      "name": "[parameters('networkInterfaces_web1512_z2_name')]",
+      "location": "eastus2",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_WEB1_ip_name'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_VNET_LAB1_name'), 'default')]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_NSG_WEB_name'))]"
+      ],
+      "kind": "Regular",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "id": "[concat(resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_web1512_z2_name')), '/ipConfigurations/ipconfig1')]",
+            "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_WEB1_ip_name'))]",
+                "properties": {
+                  "deleteOption": "Detach"
+                }
+              },
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_VNET_LAB1_name'), 'default')]"
+              },
+              "primary": true,
+              "privateIPAddressVersion": "IPv4"
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableAcceleratedNetworking": true,
+        "enableIPForwarding": false,
+        "disableTcpStateTracking": false,
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_NSG_WEB_name'))]"
+        },
+        "nicType": "Standard",
+        "auxiliaryMode": "None",
+        "auxiliarySku": "None"
+      }
+    }
+  ]
 }
